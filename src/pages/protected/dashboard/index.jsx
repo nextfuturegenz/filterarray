@@ -1,13 +1,13 @@
-import { Employee } from "@nextfuturegenz/people";
+//import { Employee } from "@nextfuturegenz/people";
 
 const Dashboard = () => {
 
-    const employee = new Employee("kamla",23,"male")
-    console.log(employee);
+    // const employee = new Employee("kamla",23,"male")
+    // console.log(employee);
 
     return (
         <div>
-            <button onClick={() => employee.introduce()} >Introduce</button>
+            {/* <button onClick={() => employee.introduce()} >Introduce</button> */}
             <p>This is thee dashbord with app need to add data in here </p>
             <br></br>
             <p>This is thee dashbord with app need to add data in here </p>
