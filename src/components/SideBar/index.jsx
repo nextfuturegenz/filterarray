@@ -5,7 +5,10 @@ import {
 import { Typography, SidebarHeader, Badge, Switch, SidebarFooter } from "../common";
 import { Diamond, BarChart, Book, Calendar, Global, InkBottle } from "../icons";
 import { Link } from "react-router-dom";
-
+import { useAuth } from "../../hooks";
+import { useRecoilValue } from "recoil";
+import { appDetailAtom } from "../../atoms";
+import { BsToggles } from "react-icons/bs";
 
 const themes = {
     light: {
@@ -69,14 +72,22 @@ const hexToRgba = (hex, alpha) => {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
+
+
 const SideBar = ({ children }) => {
-    const [collapsed, setCollapsed] = useState(false);
+    const { logout } = useAuth()
+    const [collapsed, setCollapsed] = useState(true);
     const [toggled, setToggled] = useState(false);
     const [broken, setBroken] = useState(false);
     const [rtl, setRtl] = useState(false);
     const [hasImage, setHasImage] = useState(false);
     const [theme, setTheme] = useState('cfl');
-
+    const appDetail = useRecoilValue(appDetailAtom(localStorage.getItem('selectedAppId')))
+    const { imageUrl, path,
+        title,
+        shortCode,
+        shortDescription, modules } = appDetail
+    console.log(modules)
     // handle on RTL change event
     const handleRTLChange = (e) => {
         setRtl(e.target.checked);
@@ -126,6 +137,11 @@ const SideBar = ({ children }) => {
         }),
     };
 
+    const toggleNavbar = (e) => {
+        e.preventDefault()
+        setCollapsed(!collapsed)
+    }
+
     return (
         <div style={{ display: 'flex', height: '100%', direction: rtl ? 'rtl' : 'ltr' }}>
             <Sidebar
@@ -142,21 +158,51 @@ const SideBar = ({ children }) => {
                 }}
             >
                 <div style={!collapsed ? { display: 'flex', flexDirection: 'column', height: '100%', position: 'fixed', overflowY: 'scroll' } : { display: 'flex', flexDirection: 'column', height: '100%' }}>
-                    <SidebarHeader onClick={() => setCollapsed(!collapsed)} rtl={rtl} style={{ marginBottom: '24px', marginTop: '20px', marginLeft: '16px' }} />
+                    <SidebarHeader appName={shortCode} rtl={rtl} style={{ marginBottom: '24px', marginTop: '20px', marginLeft: '16px' }} />
                     <div style={{ flex: 1, marginBottom: '32px' }}>
-                        {!collapsed ? <div style={{ padding: '0 24px', marginBottom: '8px' }}>
+                        {!collapsed ? <div style={{ padding: '0 24px', marginBottom: '8px' }} onClick={toggleNavbar}>
                             <Typography
                                 variant="body2"
                                 fontWeight={600}
                                 style={{ opacity: collapsed ? 0 : 0.7, letterSpacing: '0.5px' }}
                             >
-                                General
+                                {title} <BsToggles />
                             </Typography>
                         </div>
-                            : <></>
+                            :
+                            <div style={{ padding: '0 30px', marginBottom: '8px' }} onClick={toggleNavbar}>
+                                <BsToggles data-toggle="tooltip" data-placement="top" title="Additional details on hover" />
+                            </div>
                         }
+
+
                         <Menu menuItemStyles={menuItemStyles}>
-                            <MenuItem
+                            {
+                                modules.map((module) => {
+                                    if (module.child && module.child.length) {
+                                        return <SubMenu label={module.label} icon={<Global />} component={<Link to={module.path} />}>
+                                            {
+                                                module.child.map(child => {
+                                                    return <MenuItem component={<Link to={child.path} />}> {child.label}</MenuItem>
+                                                })
+                                            }
+                                        </SubMenu>
+                                    } else {
+                                        return <MenuItem
+                                            key={module.path}
+                                            label={module.label}
+                                            icon={ module.icon ? module.icon : <Diamond />}
+                                            component={<Link to={`/app/${module.path}`} />}
+                                            suffix={
+                                                <Badge variant="danger" shape="circle">
+                                                    6
+                                                </Badge>
+                                            }
+                                        > {module.title}</MenuItem>
+                                    }
+                                })
+                            }
+                            {/* <MenuItem
                                 label="Dashboard"
                                 icon={<Diamond />}
                                 component={<Link to={'/app/dashboard'} />}
@@ -210,9 +256,9 @@ const SideBar = ({ children }) => {
                                 <MenuItem component={<Link to={'/app/report/employees'} />}
                                 > Employees</MenuItem>
                             </SubMenu>
+                         */}
                         </Menu>
-
-                        {!collapsed ? <div style={{ padding: '0 24px', marginBottom: '8px', marginTop: '32px' }}>
+                        {/* {!collapsed ? <div style={{ padding: '0 24px', marginBottom: '8px', marginTop: '32px' }}>
                             <Typography
                                 variant="body2"
                                 fontWeight={600}
@@ -222,9 +268,9 @@ const SideBar = ({ children }) => {
                             </Typography>
                         </div>
                             : <></>
-                        }
+                        } */}
 
-                        <Menu menuItemStyles={menuItemStyles}>
+                        {/* <Menu menuItemStyles={menuItemStyles}>
                             <MenuItem
                                 label="RABAC"
                                 icon={<Calendar />}
@@ -259,16 +305,20 @@ const SideBar = ({ children }) => {
                                     <Switch id="rtl" checked={rtl} onChange={handleRTLChange} label="RTL" />
                                 </MenuItem>
                             </SubMenu>
-                        </Menu>
+                        </Menu> */}
                     </div>
-                    <SidebarFooter collapsed={collapsed} />
+                    {/* <SidebarFooter collapsed={collapsed} /> */}
                 </div>
             </Sidebar>
 
             <main style={{ backgroundColor: '#f1f0f0', width: '100%' }}>
-                <div style={{ margin: '16px' }}>
-                    {children}
-                </div>
+                {/* <div className=" p-2" style={{ display: 'flex', alignItems: 'left', justifyContent: 'space-between', backgroundColor: "white" }}>
+                    <Link onClick={(e) => toggleNavbar(e)} style={{ display: 'flex', alignItems: 'center', marginRight: '15px', color: 'black' }}>toggle</Link>
+                    <Link onClick={() => logout("/login")} style={{ display: 'flex', alignItems: 'center', marginRight: '15px', color: 'black' }}>Logout</Link>
+                </div> */}
+                {/* <div style={{ margin: 'px' }}> */}
+                {children}
+                {/* </div> */}
             </main>
         </div>
     );

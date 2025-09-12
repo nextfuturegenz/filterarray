@@ -22,6 +22,12 @@ import SaleOrder from "./protected/saleOrder";
 import Suppliers from "./protected/suppliers";
 import Register from "./public/register";
 import Services from "./public/services";
+import OrganisationONBD from "./protected/onboarding/organisation";
+import SelectPlanONBD from "./protected/onboarding/select-plan";
+import VerifyIdentityONBD from "./protected/onboarding/verify-identity";
+import AppListing from "./protected/app-listing";
+import AddAppToAccount from "./protected/app-listing/addAppToAccount";
+
 export {
     Homepage,
     Blog,
@@ -46,5 +52,10 @@ export {
     SaleOrder,
     Suppliers,
     Register,
-    Services
+    Services,
+    OrganisationONBD,
+    VerifyIdentityONBD,
+    SelectPlanONBD,
+    AppListing,
+    AddAppToAccount
 }

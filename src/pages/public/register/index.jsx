@@ -9,15 +9,18 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { creativeTeam } from '../../../components/common/ImageLoader';
 
-const schema = yup.object().shape({
-    email: yup.string().required(),
-    password: yup.string().required(),
+const schema = yup.object({
+    name: yup.string().required('Name is required'),
+    email: yup.string().required('Email is required'),
+    phoneNumber: yup.string().required('Phone Number is required'),
+    password: yup.string().required('Password is required'),
+    confirmPassword: yup.string().oneOf([yup.ref('password')], 'Passwords must match').required()
 }).required();
 
 const Register = () => {
     const navigate = useNavigate();
     const auth = useRecoilValue(authAtom);
-    const { register: registerUser } = useAuth();
+    const { register: registerNewUser } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -32,10 +35,16 @@ const Register = () => {
         resolver: yupResolver(schema),
     });
 
-    const onSubmit = async ({ email, password }) => {
+    const checkOnboardingStatusAndReturnNavUrl = (details) => {
+        return '/login'
+    }
+
+    const onSubmit = async ({ email, password, name, phoneNumber }) => {
         try {
             setIsLoading(true);
-            const user = await registerUser(email, password)
+            const user = await registerNewUser(email, password,name,phoneNumber)
+            // const { details } = user
+            // const navurl = checkOnboardingStatusAndReturnNavUrl(details);
             navigate('/login')
         } catch (error) {
             setIsLoading(false);
@@ -54,17 +63,29 @@ const Register = () => {
                     data-aos-easing="ease-in-back"><img className="my-3 img-fluid" src={creativeTeam}
                         alt="creative-team" /></div>
                 <div className="col-md-4 my-5">
-                <div className="text-center mb-5">
+                    <div className="text-center mb-5">
                         <h2 className="marker marker-center">Register</h2>
                     </div>
                     <form onSubmit={handleSubmit(onSubmit, onError)}>
                         <div className="form-group my-2">
+                            <input disabled={isLoading} type="text" name='name' className="form-control" {...register('name')} placeholder="Your Name" />
+                            {errors.name && <p>{errors.name.message}</p>}
+                        </div>
+                        <div className="form-group my-2">
                             <input disabled={isLoading} type="text" name='email' className="form-control" {...register('email')} placeholder="Your Email" />
                             {errors.email && <p>{errors.email.message}</p>}
                         </div>
-                        <div className="form-group">
+                        <div className="form-group my-2">
+                            <input disabled={isLoading} type="text" name='phoneNumber' className="form-control" {...register('phoneNumber')} placeholder="Your Phone Number" />
+                            {errors.phoneNumber && <p>{errors.phoneNumber.message}</p>}
+                        </div>
+                        <div className="form-group my-2">
                             <input disabled={isLoading} type="password" name='password' className="form-control" {...register('password')} placeholder="Password" />
                             {errors.password && <p>{errors.password.message}</p>}
+                        </div>
+                        <div className="form-group">
+                            <input disabled={isLoading} type="password" name='confirmPassword' className="form-control" {...register('confirmPassword')} placeholder="Confirm Password" />
+                            {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
                         </div>
                         <div className="form-group">
                             <button disabled={isLoading} type="submit" value="Login" className={`btn btn-primary my-3 `} >

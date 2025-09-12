@@ -1,5 +1,6 @@
 import React from 'react';
 import Typography from './Typography';
+import { useNavigate } from 'react-router-dom';
 
 const sidebarHeaderStyle = {
   height: '64px',
@@ -28,13 +29,17 @@ const logoStyle = (rtl) => ({
   marginRight: rtl ? '4px' : '14px',
 });
 
-const SidebarHeader = ({ children, rtl, ...rest }) => {
+const SidebarHeader = ({ children, appName, rtl, ...rest }) => {
+  const navigate = useNavigate()
+
   return (
     <div style={{ ...sidebarHeaderStyle }} {...rest}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div style={{ display: 'flex', alignItems: 'center', cursor:'pointer' }} onClick={() => navigate('/home')}>
         <div style={{ ...logoStyle(rtl) }}>FA</div>
         <Typography variant="subtitle1" fontWeight={700} color="#000000">
-          FilterArray
+          {
+            appName ? `${appName}`: `FilterArray`
+          }
         </Typography>
       </div>
     </div>

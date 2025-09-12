@@ -22,7 +22,12 @@ const Login = () => {
 
     useEffect(() => {
         // redirect to home if already logged in
-        if (auth) navigate('/app/dashboard');
+
+        if (auth) {
+            const { details } = auth
+            const navurl = checkOnboardingStatusAndReturnNavUrl(details);
+            navigate(navurl);
+        } 
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -33,18 +38,21 @@ const Login = () => {
     });
 
     const checkOnboardingStatusAndReturnNavUrl = (details) => {
-        // const { identityVerified, onboardingCompleted, planSelected } = details
+        const { identityVerified, onboardingCompleted, planSelected } = details
 
-        // if (!identityVerified) {
-        //     return '/onboarding/verify-identity'
-        // } else if (!planSelected) {
-        //     return '/onboarding/select-plan'
-        // } else if (!onboardingCompleted) {
-        //     return '/onboarding/organisation'
-        // } else {
+        if (!identityVerified) {
+            return '/onboarding/verify-identity'
+        } else if (!onboardingCompleted) {
+            return '/onboarding/organisation'
+        } else if (!planSelected) {
+            return '/onboarding/select-plan'
+        } else {
+            return '/home'
+        }
+        
+        // else {
         //     return '/app/dashboard'
         // }
-        return '/app/dashboard'
     }
 
     const onSubmit = async ({ email, password }) => {

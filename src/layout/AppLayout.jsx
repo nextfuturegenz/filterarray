@@ -4,12 +4,15 @@
 */
 import { SideBar } from '../components';
 import { Outlet } from 'react-router-dom';
+import { useRecoilState, useRecoilValue } from "recoil";
+import { appDetailAtom } from '../atoms';
 
 const AppLayout = () => {
-    
+
+    //const appDetail = useRecoilValue(appDetailAtom)
     return <div className="App-layout">
-        <SideBar children={<Outlet />} >
-        
+        <SideBar>
+            <Outlet />
         </SideBar>
         
     </div>
